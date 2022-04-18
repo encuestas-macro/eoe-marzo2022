@@ -1,0 +1,206 @@
+---
+output:
+  html_document:
+    css: style.css
+params:
+  encuesta: 'eoe'
+  year: 2022
+  mes: 'marzo'
+---
+
+```{r setup, include=FALSE}
+# Knirt Options 
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo = FALSE, fig.align='center')
+
+# Packages
+library(tidyverse)
+
+# Objetos utilitarios
+source(here::here('general_scripts', 'utilitarios.R'), encoding = "UTF-8")
+source(here::here('eoe/scripts/functions/data_handling.R'), encoding = "UTF-8")
+source(here::here('eoe/scripts/functions/graficos.R'), encoding = "UTF-8")
+
+sparkline::sparkline(0)
+
+# Generando el header
+header <- survey_header(params$encuesta, params$year, params$mes)
+
+font_size = 9
+```
+
+<!--- Header del documento ---------------------------------------------------->
+
+`r header`
+
+<!--- Situación Economica -------------------------------------------------->
+
+## Mejora de la situación económica del sector industrial {#sit_econ .container-fluid}
+
+------------------------------------------------------------------------
+
+::: col-md-5
+El indicador sobre la situación económica mostró una evolución favorable en el mes de marzo 2022, presentando un saldo de 40.0, para una aumento de 7.9 puntos respecto al mes pasado. De las empresas consultadas, el 48.0 % entiende que su situación económica mejoró, mientras que el 44.0 % afirma que se mantuvo igual y solo el 8.0 % que empeoró.
+
+::: mobile
+### Situación económica del mes actual
+
+```{r, fig.height=3, fig.width=5}
+eoe_line_chart('sit_econ', breaks_step = 5) + 
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = 'gray') +
+  add_margins(r = 1)
+```
+:::
+
+Por otro lado, el indicador sobre el nivel de inventario en el sector manufacturero registró un aumento de 8.6 puntos respecto al mes de febrero, colocándose en terreno positivo en este sondeo (4.6), lo que advierte una acumulación de existencias.
+:::
+
+::: {.desktop .col-md-7}
+### Situación económica del mes actual
+
+```{r, fig.height=3, fig.width=5}
+eoe_dygraph_line_chart(c('sit_econ'), legend_w = 400) |> 
+  dygraphs::dyLimit(limit = 0, color = 'gray')
+```
+:::
+
+<!--- Producción y pedidos -------------------------------------------------->
+
+## Aumentan los pedidos y el nivel de empleo {#produc_ped .container-fluid}
+
+------------------------------------------------------------------------
+
+::: col-md-5
+Los indicadores sobre los pedidos y el nivel de empleo muestran una evolución positiva respecto al sondeo anterior, siendo el empleo la variable que muestra la variación más notable (+ 5.5 puntos), para un saldo de 16.0, marcando su cuarto balance positivo desde febrero del 2020, y el segundo en lo que va del año 2022.
+
+En contraste, la producción mostró una desaceleración respecto al mes de febrero, marcando un saldo de 0.0 para una variación negativa de 14.3 puntos. 
+
+::: mobile
+### Producción y pedidos respecto al mes anterior
+
+```{r, fig.height=3, fig.width=5}
+eoe_line_chart(c("produccion", "pedidos"), breaks_step = 5) + 
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = 'gray') +
+  add_margins()
+```
+:::
+:::
+
+::: {.desktop .col-md-7}
+### Producción y pedidos respecto al mes anterior
+
+```{r, fig.height=3, fig.width=5}
+eoe_dygraph_line_chart(
+  c('produccion', 'pedidos'),
+  legend_w = 400, plot_colors = colores$green
+  ) |> 
+  dygraphs::dyLimit(limit = 0, color = 'gray')
+```
+:::
+
+<!--- Producción y pedidos -------------------------------------------------->
+
+## Sector manufacturero se mantiene con expectativas favorables {#exp .container-fluid}
+
+------------------------------------------------------------------------
+
+::: col-md-5
+En marzo las expectativas para las distintas variables del sector se mantienen favorables, algunas con niveles superiores a los registrados en el mes anterior. De este modo, el saldo que resume las expectativas sobre la situación económica de los próximos seis meses se coloca en 54.2, para un aumento de 4.2 puntos respecto a febrero, en un contexto en el que el 91.7 % de las empresas encuestadas considera que su situación económica mejorará o se mantendrá igual.
+
+::: mobile
+### Expectativas situación económica (próximos 6 meses)
+
+```{r, fig.height=3, fig.width=5}
+eoe_line_chart('sit_econ_exp', breaks_step = 5) + 
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = 'gray') +
+  add_margins()
+```
+:::
+
+Del mismo modo, el indicador de las expectativas sobre el nivel de empleo en los próximos tres meses registró una evolución positiva, mostrando un saldo de 16.7. En cambio, las expectativas de producción y del nivel de precios registraron niveles inferiores a los del sondeo anterior, con variaciones de -3.0 y -14.9 puntos, respectivamente. 
+
+
+
+::: mobile
+### Expectativas de producción y empleo
+
+```{r, , fig.height=3, fig.width=5}
+eoe_line_chart(c('produccion_exp', "empleo_exp"), breaks_step = 5) + 
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = 'gray') +
+  add_margins()
+```
+:::
+:::
+
+::: {.desktop .col-md-7}
+### Expectativas situación económica (próximos 6 meses)
+
+```{r, fig.height=3, fig.width=5}
+eoe_dygraph_line_chart(c('sit_econ_exp'), legend_w = 400, 
+                       plot_colors = colores$green) |> 
+  dygraphs::dyLimit(limit = 0, color = 'gray')
+```
+
+### Expectativas de producción y empleo
+
+```{r, , fig.height=3, fig.width=5}
+eoe_dygraph_line_chart(c('produccion_exp', 'empleo_exp'), legend_w = 400, plot_colors = colores$green) |>
+  dygraphs::dyLimit(limit = 0, color = 'gray')
+```
+:::
+
+## Confianza industrial y clima empresarial {#ice_ici .container-fluid}
+
+------------------------------------------------------------------------
+
+::: col-md-5
+El Índice de Confianza Industrial (ICI) resume la actividad actual y las expectativas de actividad futura del sector manufacturero en base a variables observables de las empresas. Este indicador muestra una desaceleración en marzo con respecto al mes pasado, para un resultado de 59.6, explicado principalmente por la evolución reciente de la producción.
+
+::: mobile
+### Indicador de Confianza Industrial
+
+```{r, fig.height=3, fig.width=5}
+eoe_bar_chart('ici', bars_fill = colores$green) + 
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = 'gray') +
+  add_margins()
+```
+:::
+
+Asimismo, la percepción que tienen los empresarios acerca de la situación económica actual y futura de sus empresas se sintetiza a través del Indicador de Clima Empresarial (ICE). En este sondeo el indicador se coloca en un nivel superior al del mes anterior, con un resultado de 47.0.
+
+::: mobile
+### Indicador de Clima Empresarial
+
+```{r, fig.height=3, fig.width=5}
+eoe_bar_chart('ice', bars_fill = colores$gray) + 
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = 'gray') +
+  ggplot2::scale_y_continuous(limits = c(0, 60)) +
+  add_margins()
+```
+:::
+:::
+
+::: {.desktop .col-md-7}
+### Indicador de Confianza Industrial
+
+```{r, fig.height=3, fig.width=5}
+eoe_dygraph_bar_chart('ici', plot_colors = colores$green)
+```
+
+### Indicador de Clima Empresarial
+
+```{r, fig.height=3, fig.width=5}
+eoe_dygraph_bar_chart('ice', plot_colors = colores$gray)
+```
+:::
+
+## Cuadro resumen {#cuadro_resumen .container-fluid .desktop}
+
+```{r}
+eoe_tabla_resumen(fullWid = FALSE, fontSize = 12, comparation_lag = 1)
+```
+
+<!-- ----------------------- General configuration ----------------------------->
+
+---
+pagetitle: "`r report_page_title(params$encuesta, params$mes, params$year)`"
+---
